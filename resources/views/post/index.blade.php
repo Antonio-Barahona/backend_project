@@ -17,7 +17,14 @@
                             <td scope="row">{{ $post->id }}</td>
                             <td>{{ $post->title }}</td>
                             <td>{{ $post->author }}</td>
-                            <td> editar | borrar </td>
+                            <td> 
+                                <a href="{{ route("post.edit", $post->id) }}" class="btn btn-sm btn-primary">EDITAR</a>
+                                <form action="{{ route("post.destroy", $post->id) }}" method="post" >
+                                    {{ csrf_field() }}
+                                    {{ method_field("DELETE") }}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Desea eliminar este registro?')">Eliminar</button>
+                                </form>
+                            </td>
                         </tr>    
                     @endforeach
                 @else ()
