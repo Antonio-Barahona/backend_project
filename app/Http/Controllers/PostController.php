@@ -36,16 +36,22 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // $data = $request->all();
+        // var_dump($data);
+        // die();
+        $data = $request->except('_token');
+        Post::insert($data);
+        
+        return redirect()->route("post.index");
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\post  $post
+     * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(post $post)
+    public function show(Post $post)
     {
         //
     }
@@ -53,24 +59,31 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\post  $post
+     * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function edit(post $post)
+    public function edit($id)
     {
-        return view("post.edit");
+        $data = Post::FindOrFail($id);
+        return view("post.edit", $data);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\post  $post
+     * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, post $post)
-    {
-        //
+    public function update(Request $request, $id)
+        {
+    //     $data = $request->all();
+    //     var_dump($data);
+    //     die();
+        $data = $request->except('_token', '_methood');
+        Post::where('id','=',$id)->update($data);
+        
+        return redirect()->route("post.index");
     }
 
     /**
@@ -79,8 +92,9 @@ class PostController extends Controller
      * @param  \App\post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(post $post)
+    public function destroy($id)
     {
-        //
+        Post::destroy($id);
+        return redirect()->route("post.index");
     }
 }
