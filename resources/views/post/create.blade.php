@@ -1,7 +1,7 @@
 @extends('base')
 @section('title') Post @endsection
 @section('content')
-    <form action="{{ route('post.store') }}" method="post">
+    <form action="{{ route('post.store') }}" method="post" enctype="multipart/form-data">
         {{ csrf_field() }}
         <div class="mb-3">
             <label for="title" class="form-label">Titulo</label>
@@ -9,7 +9,7 @@
         </div>
         <div class="mb-3">
             <label for="image" class="form-label">Imagen</label>
-            <input type="text" class="form-control" id="image" name="image">
+            <input type="file" class="form-control" id="image" name="image">
         </div>
         <div class="mb-3">
             <label for="summary" class="form-label">Resumen</label>

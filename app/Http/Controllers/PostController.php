@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -18,6 +19,16 @@ class PostController extends Controller
         return view("post.index" , $data);
     }
 
+    public function search(Request $request )
+    {
+        $data = $request->input('search');
+        $query = Post::select()
+        ->where('title','like',"%$data%")
+        ->orWhere('author','like',"%$data%")
+        ->get();
+       
+        return view("post.index")->with(["posts" => $query]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -40,6 +51,10 @@ class PostController extends Controller
         // var_dump($data);
         // die();
         $data = $request->except('_token');
+        if($request->hasFile('image'))
+        {
+            $data ['image'] = $request->file('image')->store('uploads','public');
+        }
         Post::insert($data);
         
         return redirect()->route("post.index");
@@ -64,8 +79,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        $data = Post::FindOrFail($id);
-        return view("post.edit", $data);
+        $data = Post::findOrFail($id);
+        return view("post.edit")->with(["post" => $data]);
     }
 
     /**
@@ -80,7 +95,14 @@ class PostController extends Controller
     //     $data = $request->all();
     //     var_dump($data);
     //     die();
-        $data = $request->except('_token', '_methood');
+        $data = $request->except('_token', '_method');
+        if($request->hasFile('image'))
+        {
+            $post = Post::FindOrFail($id);
+            Storage::delete("public/$post->image");
+            $data ['image'] = $request->file('image')->store('uploads','public');
+        }
+        
         Post::where('id','=',$id)->update($data);
         
         return redirect()->route("post.index");
@@ -97,4 +119,6 @@ class PostController extends Controller
         Post::destroy($id);
         return redirect()->route("post.index");
     }
+
+    
 }
