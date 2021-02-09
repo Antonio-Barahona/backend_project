@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class CategoryController extends Controller
 {
@@ -14,7 +15,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $data ['categories'] = Category::all();
+        return view("category.index");
     }
 
     /**
@@ -24,7 +26,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view("category.create");
     }
 
     /**
@@ -35,7 +37,10 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->except('_token');
+        Category::insert($data);
+        Session::flash('alert-success', "Se ha ingresado la nueva categoria {$data['name']}");
+        return redirect()->route("category.index");
     }
 
     /**
@@ -55,9 +60,10 @@ class CategoryController extends Controller
      * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit(Category $id)
     {
-        //
+        $data = Category::findOrFail($id);
+        return view("category.edit")->with(["category" => $data]);
     }
 
     /**
@@ -81,5 +87,20 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         //
+    }
+
+    public function list()
+    {
+        $data  = Category::all();
+        return response()->json($data, 200);
+    }
+
+    public function save(Request $request)
+    {
+        $category =  new Category;
+        $category->name = $request->name;
+        $category->description = $request->description;
+        $category->save();
+        return response()->json("la informacion se guardo con exito", 201);
     }
 }
